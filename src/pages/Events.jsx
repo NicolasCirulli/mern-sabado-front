@@ -2,13 +2,20 @@ import React, { useEffect, useState, useRef } from "react";
 import CardEvent from "../components/CardEvent";
 import { getAllEvents } from "../services/eventService.js";
 import { getAllCategories } from "../services/categoryService.js";
-
+import {
+  cargarEventos,
+  filtrarEventos,
+} from "../redux/actions/eventsActions.js";
+import { useDispatch, useSelector } from "react-redux";
 const Events = () => {
-  const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]);
 
   const select = useRef(null);
   const inputBusqueda = useRef(null);
+
+  const eventsStore = useSelector((store) => store.events);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     /*     function aux( response ){
@@ -16,14 +23,17 @@ const Events = () => {
       }
       getAllEvents().then( aux ) // -> aux( response.data ) */
 
-    getAllEvents().then(setData);
+    getAllEvents().then((eventos) => {
+      /*     setData(eventos); */
+      dispatch(cargarEventos(eventos));
+    });
     getAllCategories().then((res) =>
       setCategories(res.map((item) => item.category))
     );
   }, []);
 
   const handleInput = () => {
-    const category = select.current.value;
+    /*  const category = select.current.value;
     const search = inputBusqueda.current.value;
     let query = `?`;
     if (category !== "All") {
@@ -31,8 +41,9 @@ const Events = () => {
     }
     if (search) {
       query += "name=" + search;
-    }
-    getAllEvents(query).then(setData);
+    } */
+    /* getAllEvents(query).then(setData); */
+    dispatch(filtrarEventos(select.current.value, inputBusqueda.current.value));
   };
 
   return (
@@ -44,19 +55,16 @@ const Events = () => {
             <div className="mb-3">
               <label className="form-label">Events</label>
               <select
-                defaultValue="all"
+                defaultValue="All"
                 className="form-select form-select-lg"
                 name=""
                 id=""
                 onInput={handleInput}
                 ref={select}
               >
-                <option defaultValue="all" selected>
-                  {" "}
-                  All{" "}
-                </option>
+                <option value="All"> All </option>
                 {categories.map((category) => (
-                  <option key={category} defaultValue={category}>
+                  <option key={category} value={category}>
                     {category}
                   </option>
                 ))}
@@ -75,7 +83,7 @@ const Events = () => {
             />
           </div>
         </div>
-        {data.map((item) => (
+        {eventsStore.filteredEvents.map((item) => (
           <CardEvent key={item._id} event={item} />
         ))}
       </div>
