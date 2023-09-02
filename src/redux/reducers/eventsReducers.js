@@ -1,10 +1,11 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { cargarEventos, filtrarEventos } from '../actions/eventsActions'
+import { cargarEventos, filtrarEventos, cargarEventosAsync, cargarUnEvento, resetEvent } from '../actions/eventsActions'
 
 const initialState = {
     allEvents : [],
     filteredEvents : [],
-    categories: []
+    categories: [],
+    event: null
 }
 export const eventsReducer = createReducer( initialState, ( builder ) => 
     builder
@@ -25,5 +26,24 @@ export const eventsReducer = createReducer( initialState, ( builder ) =>
                 ...stateActual,
                 filteredEvents : newFilteredEvents
             }
-        } ) 
+        } )
+        .addCase( cargarEventosAsync.fulfilled, ( stateActual, action  ) => {
+            return {
+                ...stateActual,
+                allEvents : action.payload,
+                filteredEvents : action.payload
+             }
+        } )
+        .addCase( cargarUnEvento.fulfilled, ( stateActual, action ) => {
+            return {
+                ...stateActual,
+                event : action.payload
+             }
+        } )
+        .addCase( resetEvent, (stateActual, action) => {
+            return {
+                ...stateActual,
+                event : action.payload
+            }
+        } )
 )

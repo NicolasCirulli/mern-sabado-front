@@ -5,6 +5,7 @@ import { getAllCategories } from "../services/categoryService.js";
 import {
   cargarEventos,
   filtrarEventos,
+  cargarEventosAsync,
 } from "../redux/actions/eventsActions.js";
 import { useDispatch, useSelector } from "react-redux";
 const Events = () => {
@@ -18,31 +19,16 @@ const Events = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    /*     function aux( response ){
-        setData(response)
-      }
-      getAllEvents().then( aux ) // -> aux( response.data ) */
-
-    getAllEvents().then((eventos) => {
-      /*     setData(eventos); */
+    /* getAllEvents().then((eventos) => {
       dispatch(cargarEventos(eventos));
     });
     getAllCategories().then((res) =>
       setCategories(res.map((item) => item.category))
-    );
+    ); */
+    dispatch(cargarEventosAsync());
   }, []);
 
   const handleInput = () => {
-    /*  const category = select.current.value;
-    const search = inputBusqueda.current.value;
-    let query = `?`;
-    if (category !== "All") {
-      query += "category=" + category + "&";
-    }
-    if (search) {
-      query += "name=" + search;
-    } */
-    /* getAllEvents(query).then(setData); */
     dispatch(filtrarEventos(select.current.value, inputBusqueda.current.value));
   };
 

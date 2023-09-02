@@ -13,3 +13,12 @@ export const getAllEvents = async (queryParams="") => {
     }
 }
 
+export const getOneEvent = async ( id ) => {
+    try {
+        const response = await eventsQueries('/'+id)
+        return response.data.response
+    } catch (error) {
+        return {}
+    }
+}
+
