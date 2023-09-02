@@ -9,6 +9,9 @@ const NavbarMain = () => {
       <Link to="/events" className="btn btn-primary">
         Event
       </Link>
+      <Link to="/categories" className="btn btn-primary">
+        Categories
+      </Link>
       {/*  */}
     </nav>
   );

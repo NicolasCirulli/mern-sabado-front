@@ -5,6 +5,7 @@ import { getAllCategories } from "../services/categoryService.js";
 import {
   cargarEventos,
   filtrarEventos,
+  cargarEventosAsync,
 } from "../redux/actions/eventsActions.js";
 import { useDispatch, useSelector } from "react-redux";
 const Events = () => {
@@ -13,20 +14,14 @@ const Events = () => {
   const select = useRef(null);
   const inputBusqueda = useRef(null);
 
-  const eventsStore = useSelector((store) => store.events);
-
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    /*     function aux( response ){
-        setData(response)
-      }
-      getAllEvents().then( aux ) // -> aux( response.data ) */
+  const { filteredEvents: events, allEvents } = useSelector(
+    (store) => store.events
+  );
 
-    getAllEvents().then((eventos) => {
-      /*     setData(eventos); */
-      dispatch(cargarEventos(eventos));
-    });
+  useEffect(() => {
+    dispatch(cargarEventosAsync());
     getAllCategories().then((res) =>
       setCategories(res.map((item) => item.category))
     );
@@ -83,7 +78,7 @@ const Events = () => {
             />
           </div>
         </div>
-        {eventsStore.filteredEvents.map((item) => (
+        {events.map((item) => (
           <CardEvent key={item._id} event={item} />
         ))}
       </div>
