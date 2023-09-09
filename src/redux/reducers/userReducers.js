@@ -1,7 +1,8 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { cargarUsuario } from '../actions/userActions.js'
+import { cargarUsuario, signUp, signIn, signInWithToken, logout } from '../actions/userActions.js'
 const initialState = {
-    user: ''
+    user: null,
+    token : null
 }
 export const userReducer = createReducer( initialState, ( builder ) => 
     builder
@@ -10,5 +11,33 @@ export const userReducer = createReducer( initialState, ( builder ) =>
                 ...stateActual,
                 user : action.payload
              }
+        } )
+        .addCase( signUp.fulfilled, ( stateActual, action ) => {
+            return {
+                ...stateActual,
+                user : action.payload.user,
+                token : action.payload.token
+            }
+        } )
+        .addCase( signIn.fulfilled, (stateActual, action) => {
+            return {
+                ...stateActual,
+                user : action.payload.user,
+                token : action.payload.token
+            }
+        }  )
+        .addCase( signInWithToken.fulfilled, (stateActual, action) => {
+            return {
+                ...stateActual,
+                user : action.payload.user,
+                token : action.payload.token
+            }
+        } )
+        .addCase( logout, (stateActual, action) => {
+            return  {
+                ...stateActual,
+                user : null,
+                token : null
+            }
         } )
 )
