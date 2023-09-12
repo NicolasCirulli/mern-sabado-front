@@ -13,10 +13,13 @@ export const userReducer = createReducer( initialState, ( builder ) =>
              }
         } )
         .addCase( signUp.fulfilled, ( stateActual, action ) => {
+            let userData = {
+                user : action.payload.user || null,
+                token : action.payload.token || null
+            }
             return {
                 ...stateActual,
-                user : action.payload.user,
-                token : action.payload.token
+                ...userData
             }
         } )
         .addCase( signIn.fulfilled, (stateActual, action) => {

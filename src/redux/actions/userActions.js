@@ -9,7 +9,7 @@ export const cargarUsuario = createAction( 'cargar_usuario', (user) => {
 export const signUp = createAsyncThunk( "create_user", async ( body ) => {
     try {
         const response = await axios.post( 'http://localhost:4000/api/auth/signup', body )
-        localStorage.setItem( 'token', response.data.token )
+        response.data.token && localStorage.setItem( 'token', response.data.token )
         return response.data
     } catch (error) {
         console.log( error )
@@ -36,7 +36,7 @@ export const signInWithToken = createAsyncThunk( "logear_token", async (  ) => {
               }
         })
         return {
-            user : response.data.user,
+            user : response.data?.user,
             token : token
         }
     } catch (error) {

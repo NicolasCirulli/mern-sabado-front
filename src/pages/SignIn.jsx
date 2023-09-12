@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import { signIn } from "../redux/actions/userActions.js";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import jwtDecode from "jwt-decode";
 const SignIn = () => {
   const email = useRef(null);
   const password = useRef(null);
@@ -27,6 +29,20 @@ const SignIn = () => {
     }
   };
 
+  const signInWithGoogle = (credentialResponse) => {
+    const userData = jwtDecode(credentialResponse.credential);
+    const body = {
+      email: userData.email,
+      password: userData.given_name + userData.sub,
+    };
+    dispatch(signIn(body)).then((respuestaDelAction) => {
+      if (respuestaDelAction.payload.success) {
+        alert("Bienvenido " + respuestaDelAction.payload.user.name);
+        navigate("/");
+      }
+    });
+  };
+
   return (
     <div>
       <div className="d-flex col-10 justify-center items-center">
@@ -45,7 +61,14 @@ const SignIn = () => {
             <input type="password" name="password" ref={password} />
           </label>
 
-          <button className="btn btn-secondary"> Log in </button>
+          <button className="btn btn-secondary"> Sign in </button>
+          <GoogleLogin
+            text="signin_with"
+            onSuccess={signInWithGoogle}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+          />
         </form>
       </div>
     </div>

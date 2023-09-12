@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { signUp } from "../redux/actions/userActions.js";
+import { GoogleLogin } from "@react-oauth/google";
+import jwtDecode from "jwt-decode";
 const SignUp = () => {
   const [countries, setCountries] = useState([]);
 
@@ -34,6 +36,19 @@ const SignUp = () => {
       };
       dispatch(signUp(body));
     }
+  };
+
+  const signUpWithGoogle = (credentialResponse) => {
+    const dataUser = jwtDecode(credentialResponse.credential);
+    console.log(dataUser);
+    console.log(dataUser.picture);
+    const body = {
+      name: dataUser.name,
+      email: dataUser.email,
+      image: dataUser.picture,
+      password: dataUser.given_name + dataUser.sub,
+    };
+    dispatch(signUp(body));
   };
 
   return (
@@ -82,6 +97,13 @@ const SignUp = () => {
           </select>
         </label>
         <button className="btn btn-secondary"> Registrarse </button>
+        <GoogleLogin
+          text="signup_with"
+          onSuccess={signUpWithGoogle}
+          onError={() => {
+            console.log("Login Failed");
+          }}
+        />
       </form>
     </div>
   );
