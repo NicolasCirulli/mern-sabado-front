@@ -43,12 +43,10 @@ const Events = () => {
 
   return (
     <div>
-      <h2 className="text-center mb-2">Events</h2>
       <div className="d-flex flex-wrap gap-3 justify-center">
         <div className="col-10">
           <div className="mb-3">
             <div className="mb-3">
-              <label className="form-label">Events</label>
               <select
                 defaultValue="All"
                 className="form-select form-select-lg"

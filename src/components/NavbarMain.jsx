@@ -13,10 +13,6 @@ const NavbarMain = () => {
       <Link to="/events" className="btn btn-primary">
         Event
       </Link>
-      <Link to="/categories" className="btn btn-primary">
-        Categories
-      </Link>
-
       {user ? (
         <button className="btn btn-primary" onClick={() => dispatch(logout())}>
           {" "}

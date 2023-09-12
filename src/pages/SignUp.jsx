@@ -37,15 +37,21 @@ const SignUp = () => {
   };
 
   return (
-    <div className="d-flex col-10 justify-center items-center">
+    <div className="signUp__Container col-10 col-md-6 col-xl-5">
       <form
-        className="d-flex flex-column justify-center items-start gap-5 bg-gray-200 p-5"
+        className="form d-flex flex-column justify-center items-start gap-5 bg-gray-100 p-5"
         onSubmit={handleSubmit}
       >
-        <label className="border">
+        <label className="">
           {" "}
           Name
-          <input type="text" name="name" ref={name} required />
+          <input
+            className="form-text"
+            type="text"
+            name="name"
+            ref={name}
+            required
+          />
         </label>
         <label>
           {" "}
