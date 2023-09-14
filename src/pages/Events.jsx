@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import CardEvent from "../components/CardEvent";
-import { getAllEvents } from "../services/eventService.js";
 import { getAllCategories } from "../services/categoryService.js";
 import {
-  cargarEventos,
   filtrarEventos,
-  cargarEventosAsync,
+  getAllEvents,
 } from "../redux/actions/eventsActions.js";
 import { useDispatch, useSelector } from "react-redux";
 const Events = () => {
@@ -16,12 +14,10 @@ const Events = () => {
 
   const dispatch = useDispatch();
 
-  const { filteredEvents: events, allEvents } = useSelector(
-    (store) => store.events
-  );
+  const { filteredEvents: events } = useSelector((store) => store.events);
 
   useEffect(() => {
-    dispatch(cargarEventosAsync());
+    dispatch(getAllEvents());
     getAllCategories().then((res) =>
       setCategories(res.map((item) => item.category))
     );
