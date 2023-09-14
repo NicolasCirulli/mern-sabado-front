@@ -1,5 +1,6 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
+import authService from "../../services/authService";
 export const cargarUsuario = createAction( 'cargar_usuario', (user) => {
     return {
         payload : user
@@ -7,23 +8,11 @@ export const cargarUsuario = createAction( 'cargar_usuario', (user) => {
 } )
 
 export const signUp = createAsyncThunk( "create_user", async ( body ) => {
-    try {
-        const response = await axios.post( 'http://localhost:4000/api/auth/signup', body )
-        response.data.token && localStorage.setItem( 'token', response.data.token )
-        return response.data
-    } catch (error) {
-        console.log( error )
-    }
+        return await authService.signUp(body)
 } )
 
 export const signIn = createAsyncThunk( "logear", async ( body ) => {
-    try {
-        const response = await axios.post( 'http://localhost:4000/api/auth/signin', body )
-        localStorage.setItem( 'token', response.data.token )
-        return response.data
-    } catch (error) {
-        console.log( error )
-    }
+    return await authService.signIn(body)
 } )
 
 

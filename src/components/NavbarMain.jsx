@@ -2,44 +2,22 @@ import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/actions/userActions";
 import { LINKS_NAVBAR } from "../routes/links";
-const asd = () => {
-  const user = useSelector((store) => store.user.user);
-  const dispatch = useDispatch();
-  return (
-    <nav className="flex gap-3 justify-end items-center py-3 px-5">
-      <Link to="/" className="btn btn-primary">
-        Home
-      </Link>
-      <Link to="/events" className="btn btn-secondary">
-        Event
-      </Link>
-      {user ? (
-        <button className="btn btn-primary" onClick={() => dispatch(logout())}>
-          {" "}
-          Log out{" "}
-        </button>
-      ) : (
-        <>
-          <Link to="/signup" className="btn btn-primary">
-            Sign UP
-          </Link>
-          <Link to="/signin" className="btn btn-primary">
-            Sign In
-          </Link>
-        </>
-      )}
-
-      {/*  */}
-    </nav>
-  );
-};
-
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
+const defaultImage =
+  "https://img2.freepng.es/20181118/uxu/kisspng-clip-art-image-generic-drug-social-media-photograp-male-svg-png-icon-free-download-5-6821-online-5bf22649c9d890.4957056815425961698268.jpg";
+
 function NavbarMain() {
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((store) => store.user);
+  const handleClick = () => {
+    dispatch(logout());
+  };
+
   return (
     <Navbar
       expand="lg"
@@ -64,14 +42,32 @@ function NavbarMain() {
               </Nav.Link>
             ))}
             <NavDropdown
-              title="Account"
+              title={
+                <div className="flex gap-3 justify-center items-center">
+                  <img
+                    className="w-10 rounded"
+                    src={user ? user.image : defaultImage}
+                  />
+                  {user ? <span> {user.name} </span> : <span> account </span>}
+                </div>
+              }
               id="basic-nav-dropdown"
               className="text-center"
             >
-              <NavDropdown.Item href="#action/3.1">Sign Up</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">Sign In</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">Log out</NavDropdown.Item>
+              {!user ? (
+                <>
+                  <NavDropdown.Item to="/signup" as={Link}>
+                    Sign Up
+                  </NavDropdown.Item>
+                  <NavDropdown.Item to="/signin" as={Link}>
+                    Sign In
+                  </NavDropdown.Item>{" "}
+                </>
+              ) : (
+                <NavDropdown.Item to="#" as={Link} onClick={handleClick}>
+                  Log out
+                </NavDropdown.Item>
+              )}
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

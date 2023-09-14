@@ -1,78 +1,68 @@
-import React, { useRef } from "react";
-import { signIn } from "../redux/actions/userActions.js";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import Form from "react-bootstrap/Form";
+import { signIn } from "../redux/actions/userActions";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
-import jwtDecode from "jwt-decode";
-const SignIn = () => {
-  const email = useRef(null);
-  const password = useRef(null);
-
+function SignIn() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
-    const aux = [email, password];
-    if (aux.some((campo) => !campo.current.value)) {
-      alert("Todos los campos son obligatorios");
-    } else {
-      const body = {
-        email: email.current.value,
-        password: password.current.value,
-      };
-      dispatch(signIn(body)).then((response) => {
-        if (response.payload.success) {
-          alert("Bienvenido " + response.payload.user.name);
-          navigate("/");
-        }
-      });
-    }
-  };
-
-  const signInWithGoogle = (credentialResponse) => {
-    const userData = jwtDecode(credentialResponse.credential);
-    const body = {
-      email: userData.email,
-      password: userData.given_name + userData.sub,
-    };
-    dispatch(signIn(body)).then((respuestaDelAction) => {
-      if (respuestaDelAction.payload.success) {
-        alert("Bienvenido " + respuestaDelAction.payload.user.name);
+    const request = { ...formData };
+    dispatch(signIn(request)).then(({ payload }) => {
+      if (payload?.message) {
+        console.log("Manejar los errores");
+      }
+      if (payload?.user) {
         navigate("/");
       }
     });
   };
-
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    const aux = { ...formData };
+    aux[name] = value;
+    setFormData(aux);
+  };
   return (
-    <div>
-      <div className="d-flex col-10 justify-center items-center">
-        <form
-          className="d-flex flex-column justify-center items-start gap-5 bg-gray-200 p-5"
-          onSubmit={handleSubmit}
-        >
-          <label>
-            {" "}
-            email
-            <input type="email" name="email" ref={email} />
-          </label>
-          <label>
-            {" "}
-            password
-            <input type="password" name="password" ref={password} />
-          </label>
-
-          <button className="btn btn-secondary"> Sign in </button>
-          <GoogleLogin
-            text="signin_with"
-            onSuccess={signInWithGoogle}
-            onError={() => {
-              console.log("Login Failed");
-            }}
-          />
-        </form>
+    <Form
+      className="col-10 col-md-6 col-xl-4 bg-dark py-5 px-2 text-dark flex flex-col items-center text-white"
+      onSubmit={handleSubmit}
+      onInput={handleInput}
+    >
+      <Form.Group className="mb-3 col-10">
+        <Form.Label>Email address</Form.Label>
+        <Form.Control
+          type="email"
+          placeholder="example@gmail.com"
+          name="email"
+        />
+      </Form.Group>
+      <Form.Group className="mb-3 col-10">
+        <Form.Label>Password</Form.Label>
+        <Form.Control type="password" placeholder="password" name="password" />
+      </Form.Group>
+      <div className="flex col-10 gap-1">
+        <button className="text-center w-6/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2">
+          Sign in
+        </button>
+        <button className="text-center w-6/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2">
+          Google
+        </button>
       </div>
-    </div>
+      <Link
+        className="mt-4 text-center w-10/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2"
+        to="/signup"
+      >
+        If you don't have an account, please sign up.
+      </Link>
+    </Form>
   );
-};
+}
 
 export default SignIn;

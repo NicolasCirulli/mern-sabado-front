@@ -1,112 +1,106 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Form from "react-bootstrap/Form";
 import axios from "axios";
+import { signUp } from "../redux/actions/userActions";
 import { useDispatch } from "react-redux";
-import { signUp } from "../redux/actions/userActions.js";
-import { GoogleLogin } from "@react-oauth/google";
-import jwtDecode from "jwt-decode";
-const SignUp = () => {
+function SignUp() {
   const [countries, setCountries] = useState([]);
-
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    image: "",
+    country: "",
+  });
   const dispatch = useDispatch();
-
-  const name = useRef(null);
-  const email = useRef(null);
-  const password = useRef(null);
-  const image = useRef(null);
-  const country = useRef(null);
-
   useEffect(() => {
     axios("https://restcountries.com/v3.1/all?fields=name").then(({ data }) =>
-      setCountries(data.map((country) => country.name.common))
+      setCountries(
+        data
+          .map((country) => country.name.common)
+          .sort((a, b) => a.localeCompare(b))
+      )
     );
   }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const aux = [name, email, password, image, country];
-    if (aux.some((campo) => !campo.current.value)) {
-      alert("Todos los campos son obligatorios");
-    } else {
-      const body = {
-        name: name.current.value,
-        email: email.current.value,
-        image: image.current.value,
-        password: password.current.value,
-        country: country.current.value,
-      };
-      dispatch(signUp(body));
+    const request = { ...formData };
+    for (const key in request) {
+      if (!request[key]) {
+        delete request[key];
+      }
     }
+    dispatch(signUp(request)).then(({ payload }) => {
+      if (payload?.errors) {
+        console.log("Manejar los errores");
+      }
+      if (payload?.user) {
+        console.log(" Navigate home");
+      }
+    });
   };
-
-  const signUpWithGoogle = (credentialResponse) => {
-    const dataUser = jwtDecode(credentialResponse.credential);
-    console.log(dataUser);
-    console.log(dataUser.picture);
-    const body = {
-      name: dataUser.name,
-      email: dataUser.email,
-      image: dataUser.picture,
-      password: dataUser.given_name + dataUser.sub,
-    };
-    dispatch(signUp(body));
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    const aux = { ...formData };
+    aux[name] = value;
+    setFormData(aux);
   };
-
   return (
-    <div className="signUp__Container col-10 col-md-6 col-xl-5">
-      <form
-        className="form d-flex flex-column justify-center items-start gap-5 bg-gray-100 p-5"
-        onSubmit={handleSubmit}
-      >
-        <label className="">
-          {" "}
-          Name
-          <input
-            className="form-text"
-            type="text"
-            name="name"
-            ref={name}
-            required
-          />
-        </label>
-        <label>
-          {" "}
-          email
-          <input type="email" name="email" ref={email} />
-        </label>
-        <label>
-          {" "}
-          password
-          <input type="password" name="password" ref={password} />
-        </label>
-        <label>
-          {" "}
-          Image
-          <input type="text" name="image" ref={image} />
-        </label>
-        <label>
-          {" "}
-          country
-          <select name="country" ref={country}>
-            {countries.length > 0 &&
-              countries.map((country) => (
-                <option key={`opt-country-${country}`} value={country}>
-                  {" "}
-                  {country}{" "}
-                </option>
-              ))}
-          </select>
-        </label>
-        <button className="btn btn-secondary"> Registrarse </button>
-        <GoogleLogin
-          text="signup_with"
-          onSuccess={signUpWithGoogle}
-          onError={() => {
-            console.log("Login Failed");
-          }}
+    <Form
+      className="col-10 col-md-6 col-xl-4 bg-dark py-5 px-2 text-dark flex flex-col items-center text-white"
+      onSubmit={handleSubmit}
+      onInput={handleInput}
+    >
+      <Form.Group className="mb-3 col-10 ">
+        <Form.Label>Name</Form.Label>
+        <Form.Control type="text" placeholder="Nicolas" name="name" />
+      </Form.Group>
+      <Form.Group className="mb-3 col-10">
+        <Form.Label>Email address</Form.Label>
+        <Form.Control
+          type="email"
+          placeholder="example@gmail.com"
+          name="email"
         />
-      </form>
-    </div>
+      </Form.Group>
+      <Form.Group className="mb-3 col-10">
+        <Form.Label>Password</Form.Label>
+        <Form.Control type="password" placeholder="password" name="password" />
+      </Form.Group>
+      <Form.Group className="mb-3 col-10">
+        <Form.Label>Photo</Form.Label>
+        <Form.Control type="text" placeholder="Link image" name="image" />
+      </Form.Group>
+      <Form.Select
+        size="md"
+        className="mb-3"
+        style={{ width: "83.333%" }}
+        name="country"
+      >
+        {countries?.map((country) => (
+          <option key={country + " option"} value={country}>
+            {country}
+          </option>
+        ))}
+      </Form.Select>
+
+      <div className="flex col-10 gap-1">
+        <button className="text-center w-6/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2">
+          Sign up
+        </button>
+        <button className="text-center w-6/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2">
+          Google
+        </button>
+      </div>
+      <Link
+        className="mt-4 text-center w-10/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2"
+        to="/signin"
+      >
+        If you already have an account, please sign in.
+      </Link>
+    </Form>
   );
-};
+}
 
 export default SignUp;
