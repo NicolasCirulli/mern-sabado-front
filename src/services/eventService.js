@@ -13,3 +13,7 @@ export const getAllEvents = async (queryParams="") => {
     }
 }
 
+
+export default { 
+    getAllEvents
+}

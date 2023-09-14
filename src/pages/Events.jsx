@@ -1,82 +1,75 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CardEvent from "../components/CardEvent";
-import { getAllCategories } from "../services/categoryService.js";
-import {
-  filtrarEventos,
-  getAllEvents,
-} from "../redux/actions/eventsActions.js";
+import { filterEvents, getAllEvents } from "../redux/actions/eventsActions.js";
 import { useDispatch, useSelector } from "react-redux";
 const Events = () => {
-  const [categories, setCategories] = useState([]);
-
-  const select = useRef(null);
-  const inputBusqueda = useRef(null);
-
-  const dispatch = useDispatch();
-
+  const [debounce, setDebounce] = useState(null);
+  const [search, setSearch] = useState("");
   const { filteredEvents: events } = useSelector((store) => store.events);
-
+  const inputSearch = useRef(null);
+  const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAllEvents());
-    getAllCategories().then((res) =>
-      setCategories(res.map((item) => item.category))
-    );
   }, []);
 
-  const handleInput = () => {
-    /*  const category = select.current.value;
-    const search = inputBusqueda.current.value;
-    let query = `?`;
-    if (category !== "All") {
-      query += "category=" + category + "&";
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      setDebounce(search);
+    }, 250);
+    return () => {
+      clearTimeout(debounceTimer);
+    };
+  }, [search]);
+  useEffect(() => {
+    if (debounce) {
+      dispatch(filterEvents(debounce));
     }
-    if (search) {
-      query += "name=" + search;
-    } */
-    /* getAllEvents(query).then(setData); */
-    dispatch(filtrarEventos(select.current.value, inputBusqueda.current.value));
+  }, [debounce]);
+
+  const handleInput = () => {
+    setSearch(`?name=${inputSearch.current.value}`);
   };
 
   return (
-    <div>
-      <div className="d-flex flex-wrap gap-3 justify-center">
-        <div className="col-10">
-          <div className="mb-3">
-            <div className="mb-3">
-              <select
-                defaultValue="All"
-                className="form-select form-select-lg"
-                name=""
-                id=""
-                onInput={handleInput}
-                ref={select}
-              >
-                <option value="All"> All </option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <input
-              type="text"
-              className="form-control"
-              name=""
-              id=""
-              aria-describedby="helpId"
-              placeholder=""
-              onInput={handleInput}
-              ref={inputBusqueda}
-            />
+    <>
+      <div className="col-12 d-flex flex-column gap-3 items-center self-start py-4 min-h-full">
+        <div className="bg-white col-10 col-md-8 col-xl-6 rounded flex items-center">
+          <div className="py-2 px-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-5 h-5 text-rose-900"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
           </div>
+          <span className="border-e-2 border-red-400 h-7"></span>
+          <input
+            onInput={handleInput}
+            ref={inputSearch}
+            type="text"
+            placeholder="Search events"
+            className="w-11/12 h-full outline-none px-2 rounded text-pink-800"
+          />
         </div>
-        {events.map((item) => (
-          <CardEvent key={item._id} event={item} />
-        ))}
+        <div className="col-10 flex flex-wrap gap-5 justify-center grow-1">
+          {events.length > 0 ? (
+            events.map((item) => <CardEvent key={item._id} event={item} />)
+          ) : (
+            <h2 className="text-white pt-[100px]">
+              We couldn't find any events matching your search.
+            </h2>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

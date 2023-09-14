@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { filtrarEventos, getAllEvents, cargarEventoAsync } from '../actions/eventsActions'
+import { filterEvents, getAllEvents, cargarEventoAsync } from '../actions/eventsActions'
 
 const initialState = {
     allEvents : [],
@@ -9,15 +9,10 @@ const initialState = {
 }
 export const eventsReducer = createReducer( initialState, ( builder ) => 
     builder
-        .addCase( filtrarEventos, ( stateActual, action ) => {
-            const filteredSearch = stateActual.allEvents.filter( event => event.name.toLowerCase().includes( action.payload.inputValue )  )
-            let newFilteredEvents = filteredSearch
-            if( action.payload.selectedCategory != "All" ){
-                newFilteredEvents = newFilteredEvents.filter( event => event.category.category == action.payload.selectedCategory )
-            }
+        .addCase( filterEvents.fulfilled, ( stateActual, action ) => {
             return {
                 ...stateActual,
-                filteredEvents : newFilteredEvents
+                filteredEvents : action.payload
             }
         } )
         .addCase( getAllEvents.fulfilled, ( stateActual, action ) =>{

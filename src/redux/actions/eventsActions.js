@@ -1,14 +1,10 @@
-import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
+import eventService from '../../services/eventService.js'
 
 export const getAllEvents = createAsyncThunk( 'get_all_events_async', async () => {
-    try {
-        const request = await axios.get( 'http://localhost:4000/api/events' )
-        return request.data.response
-    } catch (error) {
-        return []
-    }
-} )
+        return await eventService.getAllEvents()
+})
 
 export const cargarEventoAsync = createAsyncThunk( 'cargar_evento_async', async( id ) => {
     try {
@@ -19,11 +15,6 @@ export const cargarEventoAsync = createAsyncThunk( 'cargar_evento_async', async(
     }
 } )
 
-export const filtrarEventos = createAction( 'filtrar_eventos', ( category, search ) => {
-    return {
-        payload : {
-            selectedCategory : category,
-            inputValue : search
-        }
-    }
+export const filterEvents = createAsyncThunk( 'filtrar_eventos', async ( search ) => {
+    return await eventService.getAllEvents( search )
 })
