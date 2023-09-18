@@ -14,6 +14,7 @@ function NavbarMain() {
   const dispatch = useDispatch();
 
   const { user } = useSelector((store) => store.user);
+  const events = useSelector((store) => store.events.AllEvents);
   const handleClick = () => {
     dispatch(logout());
   };

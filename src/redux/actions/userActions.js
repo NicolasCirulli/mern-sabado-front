@@ -1,6 +1,7 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios'
 import authService from "../../services/authService";
+
 export const cargarUsuario = createAction( 'cargar_usuario', (user) => {
     return {
         payload : user
