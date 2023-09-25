@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const categoriesQueries = axios.create( {
-    baseURL: 'http://localhost:4000/api/categories',
+    baseURL: import.meta.env.VITE_APP_URL_BASE +'/api/categories',
 } )
 
 export const getAllCategories = async ( ) => {

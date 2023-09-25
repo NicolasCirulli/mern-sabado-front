@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const authQuery = axios.create( {
-    baseURL: 'http://localhost:4000/api/auth',
+    baseURL: import.meta.env.VITE_APP_URL_BASE + '/api/auth',
 } )
 
 export const signUp = async (body) => {
@@ -10,7 +10,6 @@ export const signUp = async (body) => {
         request.data.token && localStorage.setItem( 'token', request.data.token )
         return request.data
     } catch (error) {
-        console.log( error )
         return error.response.data
     }
 }

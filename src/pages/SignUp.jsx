@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import { signUp } from "../redux/actions/userActions";
 import { useDispatch } from "react-redux";
+import { GoogleLogin } from "@react-oauth/google";
+import jwtDecode from "jwt-decode";
+import toastAlerts from "../utils/alerts";
 function SignUp() {
   const [countries, setCountries] = useState([]);
   const [formData, setFormData] = useState({
@@ -13,6 +16,7 @@ function SignUp() {
     image: "",
     country: "",
   });
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
     axios("https://restcountries.com/v3.1/all?fields=name").then(({ data }) =>
@@ -46,6 +50,25 @@ function SignUp() {
     aux[name] = value;
     setFormData(aux);
   };
+
+  const signUpWithGoogle = (e) => {
+    const userGoogle = jwtDecode(e.credential);
+    const body = {
+      name: userGoogle.name,
+      email: userGoogle.email,
+      image: userGoogle.picture,
+      password: userGoogle.given_name + userGoogle.sub,
+    };
+    dispatch(signUp(body)).then((res) => {
+      if (res.payload.user) {
+        toastAlerts.success(res.payload.user.name);
+        navigate("/");
+      } else if (res.payload.message) {
+        toastAlerts.error(res.payload.message);
+      }
+    });
+  };
+
   return (
     <Form
       className="col-10 col-md-6 col-xl-4 bg-dark py-5 px-2 text-dark flex flex-col items-center text-white"
@@ -85,13 +108,15 @@ function SignUp() {
         ))}
       </Form.Select>
 
-      <div className="flex col-10 gap-1">
+      <div className="flex col-10 gap-3 flex-wrap justify-center">
         <button className="text-center w-6/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2">
           Sign up
         </button>
-        <button className="text-center w-6/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2">
-          Google
-        </button>
+        <GoogleLogin
+          text="signup_with"
+          theme="filled_black"
+          onSuccess={signUpWithGoogle}
+        />
       </div>
       <Link
         className="mt-4 text-center w-10/12 self-center hover:bg-zinc-700 text-white border-2 border-zinc-700 rounded-[.5rem] font-bold underline px-4 py-2"

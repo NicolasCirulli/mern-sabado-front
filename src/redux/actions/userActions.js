@@ -20,7 +20,7 @@ export const signIn = createAsyncThunk( "logear", async ( body ) => {
 export const signInWithToken = createAsyncThunk( "logear_token", async (  ) => {
     try {
         const token = localStorage.getItem( 'token' )
-        const response = await axios.post( 'http://localhost:4000/api/auth/signin/token',{}, {
+        const response = await axios.post( import.meta.env.VITE_APP_URL_BASE +'/api/auth/signin/token',{}, {
             headers: {
                 Authorization : "Bearer " + token
               }

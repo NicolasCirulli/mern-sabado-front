@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const eventsQueries = axios.create( {
-    baseURL: 'http://localhost:4000/api/events',
+    baseURL: import.meta.env.VITE_APP_URL_BASE +'/api/events',
 } )
 
 export const getAllEvents = async (queryParams="") => {

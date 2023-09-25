@@ -8,7 +8,7 @@ export const getAllEvents = createAsyncThunk( 'get_all_events_async', async () =
 
 export const cargarEventoAsync = createAsyncThunk( 'cargar_evento_async', async( id ) => {
     try {
-        const peticion = await axios.get( 'http://localhost:4000/api/events/' + id  )
+        const peticion = await axios.get( import.meta.env.VITE_APP_URL_BASE +'/api/events/' + id  )
         return peticion.data.response
     } catch (error) {
         
